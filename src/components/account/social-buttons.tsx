@@ -70,6 +70,7 @@ export function SocialButtons({
   redirect,
   compact = false,
   iconsOnly = false,
+  divider,
 }: {
   store: StorefrontStore;
   redirect?: string;
@@ -77,6 +78,8 @@ export function SocialButtons({
   compact?: boolean;
   /** 아이콘만 같은 폭으로(회원가입) — 이름은 화면 읽기용 */
   iconsOnly?: boolean;
+  /** 이메일 칸과 가르는 줄 — 버튼이 없으면 줄도 그리지 않는다 */
+  divider?: { label: string; position: "before" | "after" };
 }) {
   const providers = store.loginMethods.filter(
     (method): method is Provider => method !== "password",
@@ -86,7 +89,8 @@ export function SocialButtons({
     onSuccess: ({ url }) => window.location.assign(url),
   });
   if (providers.length === 0) return null;
-  return (
+  const line = divider ? <Divider label={divider.label} /> : null;
+  const buttons = (
     <div
       className={
         iconsOnly
@@ -116,6 +120,23 @@ export function SocialButtons({
           )}
         </button>
       ))}
+    </div>
+  );
+  return (
+    <>
+      {divider?.position === "before" ? line : null}
+      {buttons}
+      {divider?.position === "after" ? line : null}
+    </>
+  );
+}
+
+function Divider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 text-meta text-muted">
+      <span className="h-px flex-1 bg-line" />
+      {label}
+      <span className="h-px flex-1 bg-line" />
     </div>
   );
 }

@@ -78,12 +78,12 @@ function SignupPage() {
       <h1 className="hidden text-center font-black text-[28px] tracking-[-0.04em] md:block">
         {m.signup_title()}
       </h1>
-      <SocialButtons store={store} redirect={back} iconsOnly />
-      <div className="flex items-center gap-3 text-meta text-muted">
-        <span className="h-px flex-1 bg-line" />
-        {m.login_or_email()}
-        <span className="h-px flex-1 bg-line" />
-      </div>
+      <SocialButtons
+        store={store}
+        redirect={back}
+        iconsOnly
+        divider={{ label: m.login_or_email(), position: "after" }}
+      />
       <form
         onSubmit={(event) => {
           event.preventDefault();

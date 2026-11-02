@@ -109,14 +109,12 @@ function LoginPage() {
         <h1 className="font-black text-[22px] leading-[1.4] tracking-[-0.03em]">
           {m.login_mobile_title()}
         </h1>
-        <SocialButtons store={store} redirect={back} compact />
-        {passwordLogin ? (
-          <div className="flex items-center gap-3 text-meta text-muted">
-            <span className="h-px flex-1 bg-line" />
-            {m.login_or_email()}
-            <span className="h-px flex-1 bg-line" />
-          </div>
-        ) : null}
+        <SocialButtons
+          store={store}
+          redirect={back}
+          compact
+          divider={passwordLogin ? { label: m.login_or_email(), position: "after" } : undefined}
+        />
         {form}
         {passwordLogin ? signupLine : null}
       </div>
@@ -125,12 +123,11 @@ function LoginPage() {
         <h1 className="text-center font-black text-[28px] tracking-[-0.04em]">{m.login_title()}</h1>
         {form}
         {passwordLogin ? signupLine : null}
-        <div className="flex items-center gap-3 text-meta text-muted">
-          <span className="h-px flex-1 bg-line" />
-          {m.login_social()}
-          <span className="h-px flex-1 bg-line" />
-        </div>
-        <SocialButtons store={store} redirect={back} />
+        <SocialButtons
+          store={store}
+          redirect={back}
+          divider={{ label: m.login_social(), position: "before" }}
+        />
       </div>
     </main>
   );
