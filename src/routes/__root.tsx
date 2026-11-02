@@ -164,7 +164,13 @@ function Root() {
           <SiteFooter store={store} />
         </div>
       )}
-      {hideTabBar ? null : <MobileTabBar />}
+      {hideTabBar ? null : (
+        <>
+          {/* 고정 하단 탭이 덮는 높이만큼 자리를 둔다 — 화면마다 여백으로 따로 맞추지 않는다 */}
+          <div aria-hidden className="h-16 md:hidden" />
+          <MobileTabBar />
+        </>
+      )}
       {demo ? <DemoPanel scenario={demo} /> : null}
     </>
   );

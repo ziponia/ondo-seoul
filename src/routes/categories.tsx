@@ -45,7 +45,7 @@ function CategoriesPage() {
           </label>
         </form>
       </div>
-      <div className="grid min-h-[70vh] grid-cols-[112px_1fr] border-line border-t pb-20 md:grid-cols-[200px_1fr] md:pb-0">
+      <div className="grid min-h-[70vh] grid-cols-[112px_1fr] border-line border-t pb-4 md:grid-cols-[200px_1fr] md:pb-0">
         <div role="tablist" aria-orientation="vertical" className="flex flex-col bg-surface">
           {tree.map((category) => {
             const on = category.categoryId === top?.categoryId;

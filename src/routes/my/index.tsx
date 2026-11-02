@@ -317,7 +317,7 @@ function MobileMenu() {
           </ul>
         </section>
       ))}
-      <div className="border-surface border-t-8 bg-surface px-4 pt-6 pb-24">
+      <div className="border-surface border-t-8 bg-surface px-4 pt-6 pb-8">
         <LogoutButton className="text-meta text-sub underline underline-offset-4" />
       </div>
     </nav>

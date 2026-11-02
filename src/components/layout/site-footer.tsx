@@ -29,7 +29,7 @@ export function SiteFooter({ store }: { store: StorefrontStore }) {
   const phone = rows.find((row) => row.field === "customerCenterPhone")?.value;
   const email = rows.find((row) => row.field === "customerCenterEmail")?.value;
   return (
-    <footer className="mt-24 border-line border-t bg-surface pb-24 md:pb-0">
+    <footer className="mt-24 border-line border-t bg-surface pb-8 md:pb-0">
       <div className="mx-auto grid max-w-page gap-8 px-4 py-10 md:grid-cols-[1fr_1fr] md:px-6 md:py-12">
         <div className="flex flex-col gap-3">
           <span className="font-display font-extrabold text-lg tracking-[-0.04em]">
