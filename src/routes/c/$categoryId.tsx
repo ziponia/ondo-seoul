@@ -13,11 +13,14 @@ export const Route = createFileRoute("/c/$categoryId")({
   loaderDeps: ({ search }) => search,
   loader: async ({ context: { queryClient }, params, deps }) => {
     const tree = await queryClient.ensureQueryData(categoriesQuery());
-    if (!findCategory(tree, params.categoryId)) throw notFound();
+    const found = findCategory(tree, params.categoryId);
+    if (!found) throw notFound();
     await queryClient.ensureQueryData(
       productsQuery(toProductSearch(deps, { categoryId: params.categoryId })),
     );
+    return { title: found.node.name };
   },
+  head: ({ loaderData }) => ({ meta: loaderData ? [{ title: loaderData.title }] : [] }),
   component: CategoryPage,
 });
 

@@ -40,7 +40,9 @@ export const Route = createFileRoute("/p/$productNo")({
         productsQuery(similarSearch(product.categoryPath.at(-1)?.categoryId)),
       ),
     ]);
+    return { title: product.name };
   },
+  head: ({ loaderData }) => ({ meta: loaderData ? [{ title: loaderData.title }] : [] }),
   component: ProductPage,
 });
 

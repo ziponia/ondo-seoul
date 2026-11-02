@@ -23,11 +23,14 @@ export const Route = createFileRoute("/collections/$slug")({
   loaderDeps: ({ search }) => search,
   loader: async ({ context: { queryClient }, params, deps }) => {
     // 없는 기획전은 서버 함수가 null로 답한다(오류 객체는 서버 함수 경계를 넘으며 모양이 바뀐다)
-    if (!(await queryClient.ensureQueryData(collectionQuery(params.slug)))) throw notFound();
+    const collection = await queryClient.ensureQueryData(collectionQuery(params.slug));
+    if (!collection) throw notFound();
     await queryClient.ensureQueryData(
       collectionProductsQuery(params.slug, { ...deps, size: PAGE_SIZE }),
     );
+    return { title: collection.title };
   },
+  head: ({ loaderData }) => ({ meta: loaderData ? [{ title: loaderData.title }] : [] }),
   component: CollectionPage,
 });
 
