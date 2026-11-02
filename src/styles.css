@@ -1,0 +1,67 @@
+/* 클래스는 src/만 훑는다 — 빌드 산출물(dist)·설치물을 훑으면 빌드마다 CSS가 달라지고 서버·브라우저 빌드의 파일 이름이 어긋난다 */
+@import "tailwindcss" source(".");
+/* 상세설명이 에디터가 내보낸 HTML이라 그 모양 규칙이 필요하다 — 사진 줄, 재생기 틀,
+   구분선. 활자는 product-description.tsx가 정하고 이 파일은 건드리지 않는다. */
+@import "@avarlabs/editor/styles/reader.css";
+
+/*
+ * 확장 지점 — 브랜드 색·서체·폭은 theme.css의 `@theme`에서 바꾼다. 화면 코드는 토큰만 쓰므로
+ * 그 파일만 고쳐도 전체 톤이 바뀐다.
+ */
+@import "./theme.css";
+
+html {
+  font-family: var(--font-sans);
+  word-break: keep-all;
+}
+
+body {
+  /* 모바일 가로 스크롤 방지 — 화면 밖으로 밀린 요소가 있어도 페이지 전체가 옆으로 밀리지 않는다.
+     원인은 각 화면에서 min-w-0·break-words로 고친다. 이 규칙은 마지막 안전망이다 */
+  overflow-x: clip;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 숫자(가격·수량·날짜)는 자릿수가 흔들리지 않게 한다 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 가로로 미는 칩·카테고리 줄 — 스크롤 막대를 숨긴다(터치·트랙패드로 민다) */
+.overflow-x-auto {
+  scrollbar-width: none;
+}
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* 로딩 자리표시 — 은은하게 깜빡인다. 움직임 줄이기 설정이면 멈춘다 */
+@keyframes skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+.skeleton {
+  background: var(--color-chip);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+/* 결제 확인 중 진행 막대 — 막대가 좌우로 오간다 */
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}

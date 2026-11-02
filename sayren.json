@@ -1,0 +1,6 @@
+{
+  "output": {
+    "static": "dist/client",
+    "server": "dist/server/server.js"
+  }
+}
