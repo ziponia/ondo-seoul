@@ -53,14 +53,18 @@ export function ProductDetailBody({ product }: { product: ProductDetail }) {
             <h2 className="mt-14 mb-4 font-black text-lg">
               {m.pd_notice({ name: product.notice.name })}
             </h2>
-            <table className="w-full border-collapse border-ink border-t text-body">
+            {/* 전역 keep-all이라 긴 어절이 표를 화면 밖으로 밀어낸다 — 고정 레이아웃에서 칸 안에서 끊는다 */}
+            <table className="w-full table-fixed border-collapse border-ink border-t text-body [overflow-wrap:anywhere]">
               <tbody>
                 {product.notice.fields.map((field) => (
                   <tr key={field.key} className="border-line border-b">
-                    <th scope="row" className="w-44 bg-surface px-4 py-3 text-left font-medium">
+                    <th
+                      scope="row"
+                      className="w-28 bg-surface px-3 py-3 text-left font-medium md:w-44 md:px-4"
+                    >
                       {field.label}
                     </th>
-                    <td className="px-4 py-3">{field.value}</td>
+                    <td className="px-3 py-3 md:px-4">{field.value}</td>
                   </tr>
                 ))}
               </tbody>
