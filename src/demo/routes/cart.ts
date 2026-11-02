@@ -8,12 +8,14 @@ import {
 import { consumedCartItems } from "../data/commerce";
 import { toDetail } from "../data/product-detail";
 import { DemoApiError, type DemoContext, DemoResponse, type DemoRoute, route } from "../http";
+import { memberState } from "../member-state";
 
 /**
- * 데모 장바구니 — 줄 목록을 장바구니 토큰 안에 담는다(서버 메모리 없이 여러 인스턴스에서 같다).
- * 바뀔 때마다 새 토큰을 `x-cart-token`으로 내려 SDK의 `onCartToken`이 쿠키를 바꾼다.
+ * 데모 장바구니 — 비회원은 줄 목록을 장바구니 토큰 안에 담는다(바뀔 때마다 새 토큰을 `x-cart-token`으로 내려
+ * SDK의 `onCartToken`이 쿠키를 바꾼다). 회원은 실제 API처럼 회원 장바구니(서버 메모리)이고,
+ * 로그인·가입이 비회원 장바구니를 회원 장바구니에 합친다(`mergeGuestCart`).
  */
-interface Line {
+export interface Line {
   id: string;
   productId: string;
   optionId: string | null;
@@ -22,16 +24,42 @@ interface Line {
 
 const PREFIX = "demo-cart.";
 
-export function readLines(ctx: DemoContext): Line[] {
-  const token = ctx.cartToken;
+function linesOfToken(token: string | null | undefined): Line[] {
   if (!token?.startsWith(PREFIX)) return [];
   try {
     const lines = JSON.parse(atob(token.slice(PREFIX.length))) as Line[];
-    // 주문으로 넘어간 줄은 뺀다(실제 API는 결제 완료 때 장바구니에서 지운다)
-    return Array.isArray(lines) ? lines.filter((line) => !consumedCartItems.has(line.id)) : [];
+    return Array.isArray(lines) ? lines : [];
   } catch {
     return [];
   }
+}
+
+export function readLines(ctx: DemoContext): Line[] {
+  const member = memberState(ctx);
+  const lines = member ? member.cartLines : linesOfToken(ctx.cartToken);
+  // 주문으로 넘어간 줄은 뺀다(실제 API는 결제 완료 때 장바구니에서 지운다)
+  return lines.filter((line) => !consumedCartItems.has(line.id));
+}
+
+/** 로그인·가입 — 비회원 장바구니 줄을 회원 장바구니에 합친다(같은 상품·옵션은 수량을 더한다) */
+export function mergeGuestCart(member: { cartLines: Line[] }, cartToken: string | undefined) {
+  for (const line of linesOfToken(cartToken)) {
+    const same = member.cartLines.find(
+      (own) => own.productId === line.productId && own.optionId === line.optionId,
+    );
+    if (same) same.quantity = Math.min(999, same.quantity + line.quantity);
+    else member.cartLines.push(line);
+  }
+}
+
+/** 바뀐 줄을 저장한다 — 회원은 회원 장바구니, 비회원은 새 토큰 */
+function save(ctx: DemoContext, lines: Line[]): Record<string, string> {
+  const member = memberState(ctx);
+  if (member) {
+    member.cartLines = lines;
+    return {};
+  }
+  return { "x-cart-token": tokenOf(lines) };
 }
 
 function tokenOf(lines: Line[]): string {
@@ -88,7 +116,7 @@ export function cartOf(ctx: DemoContext, lines: Line[]) {
 }
 
 function respond(ctx: DemoContext, lines: Line[]) {
-  return new DemoResponse(cartOf(ctx, lines), { "x-cart-token": tokenOf(lines) });
+  return new DemoResponse(cartOf(ctx, lines), save(ctx, lines));
 }
 
 export const cartRoutes: DemoRoute[] = [
@@ -131,6 +159,6 @@ export const cartRoutes: DemoRoute[] = [
 
   route("DELETE", "/cart/items/:id", ({ ctx, params }) => {
     const lines = readLines(ctx).filter((l) => l.id !== params.id);
-    return new DemoResponse(null, { "x-cart-token": tokenOf(lines) }, 204);
+    return new DemoResponse(null, save(ctx, lines), 204);
   }),
 ];

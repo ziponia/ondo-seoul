@@ -1,5 +1,6 @@
 import { ensureHistory } from "./data/history";
 import { DemoApiError, type DemoContext } from "./http";
+import type { Line } from "./routes/cart";
 
 /**
  * 데모 회원 상태 — 로그인 토큰마다 메모리에 둔다(쿠폰 받기·찜·배송지 등). 서버를 다시 띄우면 처음으로 돌아간다.
@@ -40,6 +41,8 @@ export interface DemoMemberState {
   /** 1:1 문의 */
   customerInquiries: DemoCustomerInquiry[];
   extra: Record<string, unknown>;
+  /** 회원 장바구니 줄 — 실제 API처럼 서버에 둔다 */
+  cartLines: Line[];
 }
 
 export interface DemoProductInquiry {
@@ -98,6 +101,7 @@ function fresh(profile: Partial<DemoMemberState>): DemoMemberState {
     sample: true,
     seeded: false,
     pointEntries: [],
+    cartLines: [],
     productInquiries: [],
     customerInquiries: [],
     addresses: [
@@ -132,6 +136,11 @@ export function issueDemoToken(profile: Partial<DemoMemberState> = {}): string {
   const token = `${DEMO_TOKEN_PREFIX}${crypto.randomUUID()}`;
   states.set(token, fresh(profile));
   return token;
+}
+
+/** 방금 발급한 토큰의 회원 상태 — 로그인 응답을 만들 때 쓴다 */
+export function demoMemberOf(token: string): DemoMemberState | undefined {
+  return states.get(token);
 }
 
 /** 로그인한 데모 회원의 상태. 로그인하지 않았으면 null */

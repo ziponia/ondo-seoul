@@ -1,5 +1,6 @@
 import { DemoApiError, type DemoRoute, route } from "../http";
-import { dropDemoToken, issueDemoToken, requireMember } from "../member-state";
+import { demoMemberOf, dropDemoToken, issueDemoToken, requireMember } from "../member-state";
+import { mergeGuestCart } from "./cart";
 
 /**
  * 데모 구매자 인증 — 이메일·비밀번호는 무엇이든 받는다(데모). 소셜 로그인은 공급자 대신
@@ -7,17 +8,24 @@ import { dropDemoToken, issueDemoToken, requireMember } from "../member-state";
  */
 const ACCESS_TTL = 30 * 60;
 
+/** 로그인·가입 응답 — 본문의 비회원 장바구니(`cartToken`)를 회원 장바구니에 합친다(실제 API와 같다) */
+function signedIn(accessToken: string, cartToken: string | undefined) {
+  const member = demoMemberOf(accessToken);
+  if (member) mergeGuestCart(member, cartToken);
+  return tokens(accessToken);
+}
+
 function tokens(accessToken: string) {
   return { accessToken, refreshToken: `refresh.${accessToken}`, expiresIn: ACCESS_TTL };
 }
 
 export const authRoutes: DemoRoute[] = [
   route("POST", "/auth/login", ({ body }) => {
-    const input = body as { email: string; password: string };
+    const input = body as { email: string; password: string; cartToken?: string };
     if (!input.email || !input.password) {
       throw new DemoApiError(401, "INVALID_CREDENTIALS", "이메일 또는 비밀번호가 맞지 않습니다");
     }
-    return tokens(issueDemoToken({ email: input.email }));
+    return signedIn(issueDemoToken({ email: input.email }), input.cartToken);
   }),
 
   route("POST", "/auth/signup", ({ body }) => {
@@ -26,8 +34,9 @@ export const authRoutes: DemoRoute[] = [
       name: string;
       phone?: string;
       agreements: { marketing?: boolean };
+      cartToken?: string;
     };
-    return tokens(
+    return signedIn(
       issueDemoToken({
         email: input.email,
         name: input.name,
@@ -41,6 +50,7 @@ export const authRoutes: DemoRoute[] = [
         addresses: [],
         sample: false,
       }),
+      input.cartToken,
     );
   }),
 
@@ -66,10 +76,10 @@ export const authRoutes: DemoRoute[] = [
   }),
 
   route("POST", "/auth/idp/token", ({ body }) => {
-    const input = body as { code: string };
+    const input = body as { code: string; cartToken?: string };
     if (input.code !== "demo")
       throw new DemoApiError(400, "INVALID_GRANT", "로그인을 완료하지 못했습니다");
-    return tokens(issueDemoToken({ hasPassword: false, email: null }));
+    return signedIn(issueDemoToken({ hasPassword: false, email: null }), input.cartToken);
   }),
 
   route("POST", "/auth/withdraw", ({ ctx }) => {

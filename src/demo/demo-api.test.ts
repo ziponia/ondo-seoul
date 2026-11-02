@@ -101,6 +101,47 @@ describe("데모 장바구니", () => {
     expect(ticket.uploadUrl).toContain("/api/demo-upload");
     expect((await api.cart.get()).items).toHaveLength(0);
   });
+
+  it("로그인하면 비회원 장바구니가 회원 장바구니로 합쳐지고 그 뒤 담기도 회원 장바구니에 남는다", async () => {
+    let guestToken: string | undefined;
+    const guest = createStorefrontClient({
+      baseUrl: DEMO_BASE_URL,
+      storeCode: "ondo-demo",
+      cartToken: () => guestToken,
+      onCartToken: (next) => {
+        guestToken = next;
+      },
+      fetch: demoFetch("default", "http://localhost:4010"),
+    });
+    const product = await guest.catalog.getProduct("4");
+    const variant = product.variants.find((v) => !v.soldOut);
+    await guest.cart.addItem({
+      productId: product.productId,
+      optionId: variant?.variantId,
+      quantity: 1,
+    });
+
+    const res = await demoFetch("default", "http://localhost:4010")(`${DEMO_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        email: "ondo@example.com",
+        password: "demo-pass",
+        cartToken: guestToken,
+      }),
+    });
+    const { accessToken } = ((await res.json()) as { data: { accessToken: string } }).data;
+    const member = sdk("default", accessToken);
+    expect((await member.cart.get()).items.map((item) => item.productId)).toEqual([
+      product.productId,
+    ]);
+    await member.cart.addItem({
+      productId: product.productId,
+      optionId: variant?.variantId,
+      quantity: 1,
+    });
+    expect((await member.cart.get()).items[0]?.quantity).toBe(2);
+  });
 });
 
 describe("데모 주문서·결제", () => {
