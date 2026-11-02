@@ -1,5 +1,6 @@
 import type { ProductDetail, PublicInquiry, ReviewPage } from "@sayren/storefront-sdk";
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { m } from "../../i18n";
 import { formatDate } from "../../lib/date";
 import { ReviewItem, ReviewSummary } from "./review-parts";
@@ -18,27 +19,56 @@ export function ProductTabs({
     { href: "#qna", label: m.pd_tab_qna({ count: inquiryCount }) },
     { href: "#shipping", label: m.pd_tab_shipping() },
   ];
+  const active = useActiveSection(tabs.map((tab) => tab.href.slice(1)));
   return (
     <nav
       aria-label={m.pd_tabs()}
-      className="sticky top-0 z-10 mt-16 grid grid-cols-4 border-ink border-b bg-page md:top-0"
+      className="sticky top-0 z-10 mt-16 grid grid-cols-4 border-line border-b bg-page md:top-0"
     >
-      {tabs.map((tab, i) => (
-        <a
-          key={tab.href}
-          href={tab.href}
-          className={`grid h-12 place-items-center font-bold text-body md:h-14 md:text-body-lg ${
-            i === 0 ? "bg-ink text-page" : ""
-          }`}
-        >
-          {tab.label}
-        </a>
-      ))}
+      {tabs.map((tab) => {
+        const on = (active ?? tabs[0]?.href.slice(1)) === tab.href.slice(1);
+        return (
+          <a
+            key={tab.href}
+            href={tab.href}
+            aria-current={on ? "location" : undefined}
+            className={`-mb-px grid h-12 place-items-center whitespace-nowrap border-b-2 px-1 text-[13px] tracking-[-0.03em] md:h-14 md:text-body-lg md:tracking-normal ${
+              on ? "border-ink font-bold text-ink" : "border-transparent text-sub"
+            }`}
+          >
+            {tab.label}
+          </a>
+        );
+      })}
     </nav>
   );
 }
 
-/** 상세 설명(서버가 정화한 HTML)·고시·인증·안내 섹션 */
+/** 지금 화면 위쪽에 걸린 구획 id — 탭 밑줄이 따라간다 */
+function useActiveSection(ids: string[]): string | null {
+  const [active, setActive] = useState<string | null>(null);
+  const key = ids.join(",");
+  useEffect(() => {
+    const sections = key
+      .split(",")
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (sections.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting);
+        const top = visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (top) setActive(top.target.id);
+      },
+      // 탭 바 바로 아래 띠에 들어온 구획을 고른다
+      { rootMargin: "-64px 0px -70% 0px" },
+    );
+    for (const section of sections) observer.observe(section);
+    return () => observer.disconnect();
+  }, [key]);
+  return active;
+}
+
 export function ProductDetailBody({ product }: { product: ProductDetail }) {
   return (
     <>
