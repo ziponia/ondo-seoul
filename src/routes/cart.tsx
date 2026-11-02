@@ -15,7 +15,7 @@ import { cartQuery, createCartCheckout, removeCartItems, updateCartItem } from "
 import { formatMoney } from "../lib/format";
 import { productsQuery } from "../lib/queries";
 
-const RECOMMEND = { sort: "recommend", size: 5 } as const;
+const RECOMMEND = { sort: "recommend", size: 6 } as const;
 
 export const Route = createFileRoute("/cart")({
   staticData: { mobileHeader: "page", hideTabBar: true },
@@ -36,7 +36,10 @@ const REASON = {
 function CartPage() {
   const cart = useSuspenseQuery(cartQuery()).data as Cart;
   return (
-    <div className={`min-h-[60vh] ${cart.items.length === 0 ? "bg-page" : "bg-surface"}`}>
+    <div
+      // 회색 바탕은 모바일 화면 아래 끝까지 깐다(상단 바 포함) — 중간에 끊기면 빈 띠가 남는다
+      className={`min-h-dvh md:min-h-[60vh] ${cart.items.length === 0 ? "bg-page" : "bg-surface"}`}
+    >
       <MobilePageHeader title={m.cart_title({ count: cart.items.length })} icons={false} center />
       <div className="hidden border-line border-b bg-page md:block">
         <ol
@@ -264,7 +267,7 @@ function EmptyCart() {
           <h2 id="rec-h" className="mb-5 font-black text-[22px] tracking-[-0.03em]">
             {m.cart_recommend()}
           </h2>
-          <ProductGrid products={recommend} columns={5} />
+          <ProductGrid products={recommend} columns={6} />
         </section>
       ) : null}
     </main>
