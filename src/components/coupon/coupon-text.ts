@@ -9,6 +9,14 @@ type CouponView = Pick<
 > &
   Partial<Pick<StorefrontCoupon, "perMemberIssueLimit">>;
 
+/** 조건 사이 구분 — 「·」 앞은 줄을 바꾸지 않는다(다음 줄이 「·」로 시작하지 않게) */
+const SEP = "\u00a0· ";
+
+/** 조건들을 잇는다 — 조건 하나는 한 줄에 두고 조건 사이에서만 줄을 바꾼다 */
+function joinConditions(parts: string[]): string {
+  return parts.map((part) => part.replaceAll(" ", "\u00a0")).join(SEP);
+}
+
 /** 크게 보이는 혜택 — 할인율·할인액, 구간 할인은 가장 높은 구간, 적립·N+1은 그 표기 */
 export function couponAmount(coupon: CouponView): string {
   const { benefit, reward } = coupon;
@@ -29,12 +37,13 @@ export function couponAmount(coupon: CouponView): string {
 export function couponCondition(coupon: CouponView): string {
   const { benefit, reward } = coupon;
   if (reward?.type === "TIERED" && reward.tiers?.length) {
-    return reward.tiers
-      .filter((tier) => tier.benefit.type === "RATE")
-      .map((tier) =>
-        m.coupon_tier_row({ amount: formatMoney(tier.minAmount), rate: tier.benefit.value }),
-      )
-      .join(" · ");
+    return joinConditions(
+      reward.tiers
+        .filter((tier) => tier.benefit.type === "RATE")
+        .map((tier) =>
+          m.coupon_tier_row({ amount: formatMoney(tier.minAmount), rate: tier.benefit.value }),
+        ),
+    );
   }
   if (reward?.type === "BUY_X_GET_Y" && reward.buy && reward.get) {
     const args = { total: reward.buy + reward.get, get: reward.get, rate: reward.rate ?? 100 };
@@ -56,7 +65,7 @@ export function couponCondition(coupon: CouponView): string {
   if (coupon.perMemberIssueLimit) {
     parts.push(m.coupon_per_member({ count: coupon.perMemberIssueLimit }));
   }
-  return parts.join(" · ");
+  return joinConditions(parts);
 }
 
 /** 기간 — 받은 뒤 유효 일수가 먼저, 아니면 종료일 */
