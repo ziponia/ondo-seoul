@@ -33,7 +33,13 @@ function SignupPage() {
   const { redirect: back } = Route.useSearch();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ email: "", password: "", name: "", phone: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    passwordConfirm: "",
+    name: "",
+    phone: "",
+  });
   const [agree, setAgree] = useState<Agree>({ terms: false, privacy: false, marketing: false });
   const input = {
     email: form.email,
@@ -45,6 +51,9 @@ function SignupPage() {
   const parsed = signupRequestSchema.safeParse(input);
   const issues = parsed.success ? [] : parsed.error.issues;
   const issueOf = (key: string) => issues.find((issue) => issue.path[0] === key)?.message;
+  // 비밀번호 확인은 화면에서만 본다 — 가입 요청에는 비밀번호 하나만 보낸다
+  const mismatch = form.passwordConfirm !== form.password;
+  const ready = parsed.success && !mismatch;
   const submit = useMutation({
     mutationFn: () => signup({ data: signupRequestSchema.omit({ cartToken: true }).parse(input) }),
     onSuccess: async (result) => {
@@ -78,7 +87,7 @@ function SignupPage() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          if (parsed.success) submit.mutate();
+          if (ready) submit.mutate();
         }}
         className="flex flex-col gap-4"
       >
@@ -110,6 +119,23 @@ function SignupPage() {
           >
             {form.password && issueOf("password") ? issueOf("password") : m.signup_password_hint()}
           </span>
+        </label>
+        <label className="flex flex-col gap-1.5 font-bold text-meta">
+          {m.signup_password_confirm()}
+          <input
+            type="password"
+            autoComplete="new-password"
+            required
+            value={form.passwordConfirm}
+            onChange={set("passwordConfirm")}
+            aria-invalid={form.passwordConfirm !== "" && mismatch}
+            className={field}
+          />
+          {form.passwordConfirm && mismatch ? (
+            <span role="alert" className="font-normal text-caption text-point">
+              {m.signup_password_mismatch()}
+            </span>
+          ) : null}
         </label>
         <label className="flex flex-col gap-1.5 font-bold text-meta">
           {m.signup_name()}
@@ -173,7 +199,7 @@ function SignupPage() {
         <div className="fixed inset-x-0 bottom-0 z-30 border-line border-t bg-page px-4 pt-2.5 pb-3.5 md:static md:border-0 md:p-0">
           <button
             type="submit"
-            disabled={!parsed.success || submit.isPending}
+            disabled={!ready || submit.isPending}
             className="h-[54px] w-full bg-ink font-bold text-base text-page disabled:bg-disabled md:mt-2"
           >
             {m.signup_submit()}
