@@ -75,13 +75,14 @@ function Home() {
           <h2 id="col-h" className="mb-5 font-black text-xl tracking-[-0.03em] md:text-[26px]">
             {m.home_collections()}
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* 모바일은 옆으로 넘기는 카드(다음 카드가 보이게 82%), 데스크톱은 격자 */}
+          <div className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 lg:grid-cols-3">
             {collections.slice(0, 3).map((collection) => (
               <Link
                 key={collection.collectionId}
                 to="/collections/$slug"
                 params={{ slug: collection.slug }}
-                className="flex flex-col gap-3"
+                className="flex w-[82%] shrink-0 snap-start flex-col gap-3 sm:w-auto"
               >
                 <span className="block aspect-[3/2] overflow-hidden bg-surface">
                   {collection.imageUrl ? (
@@ -130,30 +131,26 @@ function Home() {
 function CategoryShortcuts() {
   const categories = useCategories();
   if (categories.length === 0) return null;
+  // 글자 칸 격자 — 모바일 4열, 데스크톱 한 줄. 끝 칸은 카테고리 전체 화면이다
+  const cell =
+    "flex h-12 items-center justify-center border-line border-r border-b px-2 text-center font-bold text-body tracking-[-0.02em] md:h-14 md:text-body-lg";
   return (
-    <section
-      aria-label={m.home_categories()}
-      className="mx-auto max-w-page px-4 pt-6 md:px-6 md:pt-10"
-    >
-      <div className="flex gap-3.5 overflow-x-auto md:grid md:grid-cols-[repeat(auto-fill,minmax(96px,1fr))] md:gap-4">
+    <nav aria-label={m.home_categories()} className="mx-auto max-w-page px-4 pt-6 md:px-6 md:pt-10">
+      <ul className="grid grid-cols-4 border-line border-t border-l md:grid-flow-col md:auto-cols-fr md:grid-cols-none">
         {categories.map((category) => (
-          <Link
-            key={category.categoryId}
-            to="/c/$categoryId"
-            params={{ categoryId: category.categoryId }}
-            className="flex shrink-0 flex-col items-center gap-2 font-medium text-caption md:gap-2.5 md:text-body"
-          >
-            <span
-              aria-hidden
-              className="grid h-[60px] w-[60px] place-items-center rounded-full bg-surface font-black text-base md:h-[84px] md:w-[84px] md:text-xl"
-            >
-              {category.name.slice(0, 1)}
-            </span>
-            {category.name}
-          </Link>
+          <li key={category.categoryId} className="contents">
+            <Link to="/c/$categoryId" params={{ categoryId: category.categoryId }} className={cell}>
+              {category.name}
+            </Link>
+          </li>
         ))}
-      </div>
-    </section>
+        <li className="contents">
+          <Link to="/categories" className={`${cell} text-sub`}>
+            {m.home_all()}
+          </Link>
+        </li>
+      </ul>
+    </nav>
   );
 }
 
