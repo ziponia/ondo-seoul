@@ -60,7 +60,7 @@ export function RankingSection() {
           );
         })}
       </div>
-      <div className="grid grid-cols-2 gap-x-2 gap-y-7 md:grid-cols-4 md:gap-x-3.5 md:gap-y-10 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-x-2 gap-y-7 md:grid-cols-5 md:gap-x-3.5 md:gap-y-10">
         {products.map((product, index) => (
           // 모바일은 6위까지만 보인다(시안)
           <div key={product.productId} className={index >= 6 ? "hidden md:block" : undefined}>
