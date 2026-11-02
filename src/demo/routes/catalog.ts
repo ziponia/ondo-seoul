@@ -96,6 +96,21 @@ export const catalogRoutes: DemoRoute[] = [
     };
   }),
 
+  // 사이트맵 상품 — 실제 API처럼 상품 id 순이다. 수정 시각은 신상품 순서로 만든 고정 값이다
+  route("GET", "/sitemap/products", ({ ctx, query }) =>
+    page(
+      [...catalog(ctx)]
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .map((product) => ({
+          productId: product.id,
+          name: productName(ctx, product),
+          updatedAt: new Date(Date.UTC(2026, 9, product.arrival)).toISOString(),
+        })),
+      query,
+      100,
+    ),
+  ),
+
   route("GET", "/collections", ({ ctx, query }) =>
     page(ctx.scenario === "empty" ? [] : DEMO_COLLECTIONS.map((c) => toCollection(ctx, c)), query),
   ),

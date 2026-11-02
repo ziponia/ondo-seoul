@@ -16,8 +16,10 @@ import { Route as CouponsRouteImport } from './routes/coupons'
 import { Route as DemoPayRouteImport } from './routes/demo-pay'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MyRouteRouteImport } from './routes/my/route'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ApiDemoApiRouteImport } from './routes/api/demo-api'
 import { Route as ApiDemoUploadRouteImport } from './routes/api/demo-upload'
 import { Route as CCategoryIdRouteImport } from './routes/c/$categoryId'
@@ -79,6 +81,11 @@ const MyRouteRoute = MyRouteRouteImport.update({
   path: '/my',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -87,6 +94,11 @@ const SearchRoute = SearchRouteImport.update({
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiDemoApiRoute = ApiDemoApiRouteImport.update({
@@ -224,8 +236,10 @@ export interface FileRoutesByFullPath {
   '/coupons': typeof CouponsRoute
   '/demo-pay': typeof DemoPayRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/demo-api': typeof ApiDemoApiRoute
   '/api/demo-upload': typeof ApiDemoUploadRoute
   '/c/$categoryId': typeof CCategoryIdRoute
@@ -259,8 +273,10 @@ export interface FileRoutesByTo {
   '/coupons': typeof CouponsRoute
   '/demo-pay': typeof DemoPayRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/demo-api': typeof ApiDemoApiRoute
   '/api/demo-upload': typeof ApiDemoUploadRoute
   '/c/$categoryId': typeof CCategoryIdRoute
@@ -296,8 +312,10 @@ export interface FileRoutesById {
   '/coupons': typeof CouponsRoute
   '/demo-pay': typeof DemoPayRoute
   '/login': typeof LoginRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/demo-api': typeof ApiDemoApiRoute
   '/api/demo-upload': typeof ApiDemoUploadRoute
   '/c/$categoryId': typeof CCategoryIdRoute
@@ -334,8 +352,10 @@ export interface FileRouteTypes {
     | '/coupons'
     | '/demo-pay'
     | '/login'
+    | '/robots.txt'
     | '/search'
     | '/signup'
+    | '/sitemap.xml'
     | '/api/demo-api'
     | '/api/demo-upload'
     | '/c/$categoryId'
@@ -369,8 +389,10 @@ export interface FileRouteTypes {
     | '/coupons'
     | '/demo-pay'
     | '/login'
+    | '/robots.txt'
     | '/search'
     | '/signup'
+    | '/sitemap.xml'
     | '/api/demo-api'
     | '/api/demo-upload'
     | '/c/$categoryId'
@@ -405,8 +427,10 @@ export interface FileRouteTypes {
     | '/coupons'
     | '/demo-pay'
     | '/login'
+    | '/robots.txt'
     | '/search'
     | '/signup'
+    | '/sitemap.xml'
     | '/api/demo-api'
     | '/api/demo-upload'
     | '/c/$categoryId'
@@ -442,8 +466,10 @@ export interface RootRouteChildren {
   CouponsRoute: typeof CouponsRoute
   DemoPayRoute: typeof DemoPayRoute
   LoginRoute: typeof LoginRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   SearchRoute: typeof SearchRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiDemoApiRoute: typeof ApiDemoApiRoute
   ApiDemoUploadRoute: typeof ApiDemoUploadRoute
   CCategoryIdRoute: typeof CCategoryIdRoute
@@ -509,6 +535,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -521,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/demo-api': {
@@ -744,8 +784,10 @@ const rootRouteChildren: RootRouteChildren = {
   CouponsRoute: CouponsRoute,
   DemoPayRoute: DemoPayRoute,
   LoginRoute: LoginRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   SearchRoute: SearchRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiDemoApiRoute: ApiDemoApiRoute,
   ApiDemoUploadRoute: ApiDemoUploadRoute,
   CCategoryIdRoute: CCategoryIdRoute,
