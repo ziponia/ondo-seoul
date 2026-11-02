@@ -461,7 +461,7 @@ function CheckoutForm({ page }: { page: Page }) {
                 type="button"
                 disabled={!ready || pay.isPending}
                 onClick={() => pay.mutate()}
-                className="flex h-[60px] w-full flex-col items-center justify-center bg-ink font-bold text-base text-page leading-tight disabled:bg-disabled"
+                className="flex h-14 w-full items-center justify-center gap-1.5 bg-ink font-bold text-base text-page disabled:bg-disabled"
               >
                 <span>
                   {formatMoney(
