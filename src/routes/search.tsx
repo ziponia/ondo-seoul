@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { ChevronLeft, Search } from "lucide-react";
 import { z } from "zod";
+import { CategoryGrid } from "../components/category/category-grid";
 import { ProductGrid } from "../components/listing/product-grid";
 import { ProductListing } from "../components/listing/product-listing";
 import { RecentSearches, rememberSearch } from "../components/listing/recent-searches";
-import { useCategories, useProducts } from "../hooks/use-catalog";
+import { useProducts } from "../hooks/use-catalog";
 import { m } from "../i18n";
 import { listSearchSchema, toProductSearch } from "../lib/list-search";
 import { categoriesQuery, productsQuery } from "../lib/queries";
@@ -187,7 +188,6 @@ function MobileSearchBar({
 
 /** 검색어가 없을 때 — 최근 검색어와 카테고리 바로가기(모바일 검색 시안) */
 function SearchStart({ onPick }: { onPick: (keyword: string) => void }) {
-  const categories = useCategories();
   return (
     <div className="mb-10 flex flex-col gap-8 md:hidden">
       <RecentSearches onPick={onPick} />
@@ -195,24 +195,7 @@ function SearchStart({ onPick }: { onPick: (keyword: string) => void }) {
         <h2 id="cat-h" className="mb-3 font-bold text-body-lg">
           {m.search_categories()}
         </h2>
-        <div className="grid grid-cols-4 gap-x-2 gap-y-3.5">
-          {categories.map((category) => (
-            <Link
-              key={category.categoryId}
-              to="/c/$categoryId"
-              params={{ categoryId: category.categoryId }}
-              className="flex flex-col items-center gap-1.5 text-caption"
-            >
-              <span
-                aria-hidden
-                className="grid h-14 w-14 place-items-center rounded-full bg-surface font-black"
-              >
-                {category.name.slice(0, 1)}
-              </span>
-              {category.name}
-            </Link>
-          ))}
-        </div>
+        <CategoryGrid />
       </section>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CategoryGrid } from "../components/category/category-grid";
 import { CollectionBanner } from "../components/collection/collection-banner";
 import { collectionPeriod } from "../components/collection/collection-period";
 import { CouponAction } from "../components/coupon/coupon-action";
@@ -7,7 +8,7 @@ import { couponOpensAt } from "../components/coupon/coupon-text";
 import { CouponTicket } from "../components/coupon/coupon-ticket";
 import { RANKING_SEARCH, RankingSection } from "../components/home/ranking-section";
 import { ProductCard } from "../components/product/product-card";
-import { useCategories, useProducts, useStore } from "../hooks/use-catalog";
+import { useProducts, useStore } from "../hooks/use-catalog";
 import { m } from "../i18n";
 import { collectionsQuery, couponsQuery, productsQuery } from "../lib/queries";
 
@@ -129,27 +130,9 @@ function Home() {
 }
 
 function CategoryShortcuts() {
-  const categories = useCategories();
-  if (categories.length === 0) return null;
-  // 글자 칸 격자 — 모바일 4열, 데스크톱 한 줄. 끝 칸은 카테고리 전체 화면이다
-  const cell =
-    "flex h-12 items-center justify-center border-line border-r border-b px-2 text-center font-bold text-body tracking-[-0.02em] md:h-14 md:text-body-lg";
   return (
     <nav aria-label={m.home_categories()} className="mx-auto max-w-page px-4 pt-6 md:px-6 md:pt-10">
-      <ul className="grid grid-cols-4 border-line border-t border-l md:grid-flow-col md:auto-cols-fr md:grid-cols-none">
-        {categories.map((category) => (
-          <li key={category.categoryId} className="contents">
-            <Link to="/c/$categoryId" params={{ categoryId: category.categoryId }} className={cell}>
-              {category.name}
-            </Link>
-          </li>
-        ))}
-        <li className="contents">
-          <Link to="/categories" className={`${cell} text-sub`}>
-            {m.home_all()}
-          </Link>
-        </li>
-      </ul>
+      <CategoryGrid row />
     </nav>
   );
 }
