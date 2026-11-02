@@ -19,7 +19,9 @@ export function couponAmount(coupon: CouponView): string {
   if (reward?.type === "BUY_X_GET_Y" && reward.buy && reward.get) {
     return m.coupon_bxgy({ buy: reward.buy, get: reward.get });
   }
-  const value = benefit.type === "RATE" ? `${benefit.value}%` : formatMoney(benefit.value);
+  // 적립금 지급은 `reward.benefit`이 적립 규칙이다 — `benefit`은 옛 코드용 근사값이라 쓰지 않는다
+  const shown = (reward?.type === "POINT" ? reward.benefit : undefined) ?? benefit;
+  const value = shown.type === "RATE" ? `${shown.value}%` : formatMoney(shown.value);
   return reward?.type === "POINT" ? m.coupon_point({ value }) : value;
 }
 
@@ -40,8 +42,10 @@ export function couponCondition(coupon: CouponView): string {
   }
   const parts: string[] = [];
   if (reward?.type === "POINT") parts.push(m.coupon_point_note());
-  if (benefit.maxDiscountAmount) {
-    const amount = formatMoney(benefit.maxDiscountAmount);
+  const cap = ((reward?.type === "POINT" ? reward.benefit : undefined) ?? benefit)
+    .maxDiscountAmount;
+  if (cap) {
+    const amount = formatMoney(cap);
     parts.push(
       reward?.type === "POINT" ? m.coupon_max_point({ amount }) : m.coupon_max_discount({ amount }),
     );
