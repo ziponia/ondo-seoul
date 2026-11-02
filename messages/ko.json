@@ -68,7 +68,7 @@
   "ci_photo_limit": "최대 {max}장",
   "ci_remove_photo": "{n}번째 사진 삭제",
   "ci_required": "필수",
-  "ci_required_missing": "{label}을(를) 입력해 주십시오",
+  "ci_required_missing": "{label} 항목을 입력해 주십시오",
   "ci_upload_failed": "사진을 올리지 못했습니다",
   "cl_completed": "{date} 완료",
   "cl_empty": "해당하는 신청 내역이 없습니다",
