@@ -67,35 +67,28 @@ function CategoriesPage() {
           </Link>
         </div>
         {top ? (
-          <div role="tabpanel" className="flex flex-col gap-4 px-4 py-3 md:px-6">
-            <Link
-              to="/c/$categoryId"
-              params={{ categoryId: top.categoryId }}
-              className="flex h-11 items-center justify-between font-bold text-body-lg"
-            >
-              <span>
-                {top.name} <span className="ml-1">{m.home_all()}</span>
-              </span>
-              <ChevronRight size={16} aria-hidden />
-            </Link>
-            <div className="grid grid-cols-3 gap-x-2 gap-y-5 md:grid-cols-6">
-              {top.children.map((child) => (
-                <Link
-                  key={child.categoryId}
-                  to="/c/$categoryId"
-                  params={{ categoryId: child.categoryId }}
-                  className="flex flex-col items-center gap-2 font-medium text-meta"
-                >
-                  <span
-                    aria-hidden
-                    className="grid h-16 w-16 place-items-center rounded-full bg-surface font-black text-lg"
+          <div role="tabpanel" className="px-4 pt-5 pb-6 md:px-8 md:pt-6">
+            <h2 className="pb-3 font-black text-lg tracking-[-0.03em] md:text-xl">{top.name}</h2>
+            {/* 하위 카테고리는 글자 목록이다 — 첫 줄은 상위 카테고리 전체 */}
+            <ul className="border-ink border-t md:grid md:grid-cols-2 md:gap-x-10">
+              {[
+                { categoryId: top.categoryId, name: m.home_all(), all: true },
+                ...top.children.map((child) => ({ ...child, all: false })),
+              ].map((row) => (
+                <li key={`${row.categoryId}-${row.all}`} className="border-line border-b">
+                  <Link
+                    to="/c/$categoryId"
+                    params={{ categoryId: row.categoryId }}
+                    className={`flex h-[52px] items-center justify-between gap-3 text-body-lg ${
+                      row.all ? "font-bold" : ""
+                    }`}
                   >
-                    {child.name.slice(0, 1)}
-                  </span>
-                  {child.name}
-                </Link>
+                    {row.name}
+                    <ChevronRight size={16} className="shrink-0 text-muted" aria-hidden />
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ) : null}
       </div>
