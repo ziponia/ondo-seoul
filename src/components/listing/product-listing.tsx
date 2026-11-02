@@ -118,12 +118,7 @@ export function ProductListing({
           </div>
         ) : null}
         <div className="pt-4">
-          <ProductGrid
-            products={page.contents}
-            emptyText={emptyText}
-            strike
-            columns={wide ? 6 : 4}
-          />
+          <ProductGrid products={page.contents} emptyText={emptyText} columns={wide ? 6 : 4} />
         </div>
         <Pager
           page={page.page}

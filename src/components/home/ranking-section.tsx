@@ -64,7 +64,7 @@ export function RankingSection() {
         {products.map((product, index) => (
           // 모바일은 6위까지만 보인다(시안)
           <div key={product.productId} className={index >= 6 ? "hidden md:block" : undefined}>
-            <ProductCard product={product} rank={index + 1} compact strike />
+            <ProductCard product={product} rank={index + 1} compact />
           </div>
         ))}
       </div>

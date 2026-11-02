@@ -17,7 +17,6 @@ export function ProductCard({
   product,
   rank,
   compact = false,
-  strike = false,
   badge,
 }: {
   product: ProductCardData;
@@ -25,7 +24,6 @@ export function ProductCard({
   /** 사진 왼쪽 위 글자 배지(신상품 등) */
   badge?: string;
   compact?: boolean;
-  strike?: boolean;
 }) {
   return (
     <Link
@@ -56,8 +54,9 @@ export function ProductCard({
       >
         {product.name}
       </span>
-      <Price product={product} size={compact ? "card-sm" : "card"} strike={strike} />
-      <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-sub">
+      {/* 목록 카드는 할인율·판매가만 — 정가 취소선은 상세에서 보인다 */}
+      <Price product={product} size={compact ? "card-sm" : "card"} />
+      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-caption text-sub [&>*+*]:before:mr-1.5 [&>*+*]:before:text-line-strong [&>*+*]:before:content-['·']">
         {product.reviewCount > 0 ? (
           <span>
             <span className="sr-only">
@@ -72,11 +71,7 @@ export function ProductCard({
             </span>
           </span>
         ) : null}
-        {product.freeShipping ? (
-          <span className="border border-line-strong px-1.5 py-px text-[11px]">
-            {m.product_free_shipping()}
-          </span>
-        ) : null}
+        {product.freeShipping ? <span>{m.product_free_shipping()}</span> : null}
         {product.availableInMarket ? null : <span>{m.product_not_in_market()}</span>}
       </span>
     </Link>

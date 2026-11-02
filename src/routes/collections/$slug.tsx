@@ -88,7 +88,7 @@ function CollectionPage() {
             onChange={(next) => navigate({ search: { sort: next } })}
           />
         </div>
-        <ProductGrid products={products.contents} strike />
+        <ProductGrid products={products.contents} />
         <Pager
           page={products.page}
           totalPages={products.totalPages}
