@@ -58,6 +58,25 @@ export const login = createServerFn({ method: "POST" })
     }
   });
 
+/**
+ * 비밀번호 재설정 메일 요청 — sayren이 상점 이름으로 메일을 보낸다. 바꾼 뒤 로그인 화면으로 돌아오게 successUrl을 넘긴다
+ * (https 상점 도메인만 허용되어 로컬 http 개발 서버에서는 생략한다)
+ */
+export const requestPasswordReset = createServerFn({ method: "POST" })
+  .validator(z.object({ email: z.string().email() }))
+  .handler(async ({ data }) => {
+    const successUrl = new URL("/login", getRequestUrl());
+    try {
+      await buyerAuth().requestPasswordReset({
+        email: data.email,
+        successUrl: successUrl.protocol === "https:" ? successUrl.toString() : undefined,
+      });
+      return { ok: true as const };
+    } catch (error) {
+      return failure(error);
+    }
+  });
+
 export const signup = createServerFn({ method: "POST" })
   .validator(signupRequestSchema.omit({ cartToken: true }))
   .handler(async ({ data }) => {

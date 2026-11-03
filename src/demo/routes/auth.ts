@@ -62,6 +62,8 @@ export const authRoutes: DemoRoute[] = [
     return tokens(refreshToken.slice("refresh.".length));
   }),
 
+  route("POST", "/auth/password-reset", () => null),
+
   route("POST", "/auth/logout", ({ ctx }) => {
     dropDemoToken(ctx.accessToken);
     return null;

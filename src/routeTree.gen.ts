@@ -16,6 +16,7 @@ import { Route as CouponsRouteImport } from './routes/coupons'
 import { Route as DemoPayRouteImport } from './routes/demo-pay'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MyRouteRouteImport } from './routes/my/route'
+import { Route as PasswordResetRouteImport } from './routes/password-reset'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -79,6 +80,11 @@ const LoginRoute = LoginRouteImport.update({
 const MyRouteRoute = MyRouteRouteImport.update({
   id: '/my',
   path: '/my',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PasswordResetRoute = PasswordResetRouteImport.update({
+  id: '/password-reset',
+  path: '/password-reset',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/coupons': typeof CouponsRoute
   '/demo-pay': typeof DemoPayRoute
   '/login': typeof LoginRoute
+  '/password-reset': typeof PasswordResetRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/coupons': typeof CouponsRoute
   '/demo-pay': typeof DemoPayRoute
   '/login': typeof LoginRoute
+  '/password-reset': typeof PasswordResetRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -312,6 +320,7 @@ export interface FileRoutesById {
   '/coupons': typeof CouponsRoute
   '/demo-pay': typeof DemoPayRoute
   '/login': typeof LoginRoute
+  '/password-reset': typeof PasswordResetRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/search': typeof SearchRoute
   '/signup': typeof SignupRoute
@@ -352,6 +361,7 @@ export interface FileRouteTypes {
     | '/coupons'
     | '/demo-pay'
     | '/login'
+    | '/password-reset'
     | '/robots.txt'
     | '/search'
     | '/signup'
@@ -389,6 +399,7 @@ export interface FileRouteTypes {
     | '/coupons'
     | '/demo-pay'
     | '/login'
+    | '/password-reset'
     | '/robots.txt'
     | '/search'
     | '/signup'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/coupons'
     | '/demo-pay'
     | '/login'
+    | '/password-reset'
     | '/robots.txt'
     | '/search'
     | '/signup'
@@ -466,6 +478,7 @@ export interface RootRouteChildren {
   CouponsRoute: typeof CouponsRoute
   DemoPayRoute: typeof DemoPayRoute
   LoginRoute: typeof LoginRoute
+  PasswordResetRoute: typeof PasswordResetRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SearchRoute: typeof SearchRoute
   SignupRoute: typeof SignupRoute
@@ -533,6 +546,13 @@ declare module '@tanstack/react-router' {
       path: '/my'
       fullPath: '/my'
       preLoaderRoute: typeof MyRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/password-reset': {
+      id: '/password-reset'
+      path: '/password-reset'
+      fullPath: '/password-reset'
+      preLoaderRoute: typeof PasswordResetRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -784,6 +804,7 @@ const rootRouteChildren: RootRouteChildren = {
   CouponsRoute: CouponsRoute,
   DemoPayRoute: DemoPayRoute,
   LoginRoute: LoginRoute,
+  PasswordResetRoute: PasswordResetRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SearchRoute: SearchRoute,
   SignupRoute: SignupRoute,

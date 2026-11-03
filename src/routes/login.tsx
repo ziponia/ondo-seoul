@@ -10,7 +10,10 @@ import { login, meQuery, redirectSchema } from "../lib/account";
 
 export const Route = createFileRoute("/login")({
   staticData: { mobileHeader: "page", hideTabBar: true },
-  validateSearch: z.object({ redirect: redirectSchema }),
+  validateSearch: z.object({
+    redirect: redirectSchema,
+    passwordReset: z.literal("done").optional(),
+  }),
   beforeLoad: async ({ context: { queryClient }, search }) => {
     // 이미 로그인했으면 돌아갈 곳으로 보낸다
     if (await queryClient.ensureQueryData(meQuery()))
@@ -24,7 +27,7 @@ const field =
 
 function LoginPage() {
   const store = useStore();
-  const { redirect: back } = Route.useSearch();
+  const { redirect: back, passwordReset } = Route.useSearch();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
@@ -46,6 +49,11 @@ function LoginPage() {
       }}
       className="flex flex-col gap-3"
     >
+      {passwordReset === "done" ? (
+        <p role="status" className="border border-line-strong px-4 py-3.5 text-body">
+          {m.login_password_reset_done()}
+        </p>
+      ) : null}
       <label className="flex flex-col gap-1.5 font-bold text-meta">
         <span className="max-md:sr-only">{m.login_email()}</span>
         <input
@@ -82,6 +90,12 @@ function LoginPage() {
       >
         {m.login_submit()}
       </button>
+      <Link
+        to="/password-reset"
+        className="self-center text-meta text-sub underline-offset-4 hover:underline"
+      >
+        {m.login_forgot()}
+      </Link>
     </form>
   ) : null;
   const signupLine = (

@@ -15,7 +15,7 @@
   "dependencies": {
     "@avarlabs/editor": "^0.1.3",
     "@hookform/resolvers": "^7.0.1",
-    "@sayren/storefront-sdk": "^0.38.0",
+    "@sayren/storefront-sdk": "^0.39.0",
     "@tailwindcss/vite": "^4.3.4",
     "@tanstack/react-query": "^5.105.3",
     "@tanstack/react-router": "^1.170.38",
