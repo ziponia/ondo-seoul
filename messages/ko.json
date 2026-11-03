@@ -80,7 +80,7 @@
   "cl_filter_withdrawn": "철회",
   "cl_reason_line": "{option}사유 {reason}",
   "cl_refund": "환불 {amount}",
-  "cl_rejected": "거절 사유 {reason}",
+  "cl_reject_reason": "거절 사유",
   "cl_requested": "{date} 신청",
   "cl_status_APPROVED": "승인",
   "cl_status_COLLECTED": "회수 완료",

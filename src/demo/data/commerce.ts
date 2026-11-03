@@ -91,9 +91,11 @@ export interface DemoClaim {
   orderId: string;
   lineId: string;
   type: "RETURN" | "EXCHANGE" | "CANCEL";
-  status: "REQUESTED" | "COLLECTING" | "COMPLETED" | "WITHDRAWN";
+  status: "REQUESTED" | "COLLECTING" | "COMPLETED" | "WITHDRAWN" | "REJECTED";
   reason: string;
   reasonDetail: string | null;
+  /** 판매자가 적은 거절 상세 사유 — 거절(`REJECTED`)만 값이 있다 */
+  rejectReason?: string;
   quantity: number;
   expectedRefundAmount: number | null;
   requestedAt: string;

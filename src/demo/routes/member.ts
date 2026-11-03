@@ -51,7 +51,7 @@ const plusDays = (iso: string, days: number) =>
 
 function claimOfLine(lineId: string): DemoClaim | undefined {
   return [...demoClaims.values()]
-    .filter((c) => c.lineId === lineId && c.status !== "WITHDRAWN")
+    .filter((c) => c.lineId === lineId && c.status !== "WITHDRAWN" && c.status !== "REJECTED")
     .at(-1);
 }
 
@@ -288,7 +288,7 @@ function claimView(claim: DemoClaim) {
     expectedRefundAmount: claim.expectedRefundAmount,
     expectedDeliveryFeeRefundAmount: null,
     expectedPointRefundAmount: 0,
-    rejectReason: null,
+    rejectReason: claim.rejectReason ?? null,
     returnAddress:
       claim.type === "CANCEL"
         ? null

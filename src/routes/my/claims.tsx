@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ChevronDown } from "lucide-react";
 import { z } from "zod";
 import { MySubPage } from "../../components/my/my-sub-page";
 import { ProductImage } from "../../components/product/product-image";
@@ -10,7 +11,7 @@ import { myClaimsQuery, myOrdersQuery, withdrawClaim } from "../../lib/my";
 
 /**
  * 취소·교환·반품 — `myClaims.list` 응답. 사진·옵션·주문은 주문 목록 응답에서 주문상품 id로 찾아 붙인다.
- * 접수 상태만 철회할 수 있다(`myClaims.withdraw`).
+ * 접수 상태만 철회할 수 있다(`myClaims.withdraw`). 거절 사유는 접어 두고 누르면 펼친다.
  */
 const FILTERS = {
   all: null,
@@ -121,9 +122,19 @@ function Claims() {
                       </p>
                     ) : null}
                     {claim.rejectReason ? (
-                      <p className="text-meta text-point">
-                        {m.cl_rejected({ reason: claim.rejectReason })}
-                      </p>
+                      <details className="group mt-1 text-meta">
+                        <summary className="flex w-fit cursor-pointer list-none items-center gap-1 font-bold text-point [&::-webkit-details-marker]:hidden">
+                          {m.cl_reject_reason()}
+                          <ChevronDown
+                            size={14}
+                            aria-hidden
+                            className="transition-transform group-open:rotate-180"
+                          />
+                        </summary>
+                        <p className="mt-2 whitespace-pre-line bg-surface px-3.5 py-3 text-body text-sub">
+                          {claim.rejectReason}
+                        </p>
+                      </details>
                     ) : null}
                   </div>
                 </div>

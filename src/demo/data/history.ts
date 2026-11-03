@@ -130,7 +130,9 @@ function lineState(status: ItemStatus, daysAgo: number): LineState {
 function claim(
   order: DemoOrder,
   line: CheckoutLine,
-  input: Pick<DemoClaim, "type" | "status" | "reason" | "reasonDetail"> & { daysAgo: number },
+  input: Pick<DemoClaim, "type" | "status" | "reason" | "reasonDetail" | "rejectReason"> & {
+    daysAgo: number;
+  },
 ) {
   const value: DemoClaim = {
     claimId: id("clm"),
@@ -142,10 +144,14 @@ function claim(
     status: input.status,
     reason: input.reason,
     reasonDetail: input.reasonDetail,
+    ...(input.rejectReason ? { rejectReason: input.rejectReason } : {}),
     quantity: line.quantity,
     expectedRefundAmount: input.type === "EXCHANGE" ? null : line.totalPrice,
     requestedAt: daysAgo(input.daysAgo),
-    completedAt: input.status === "COMPLETED" ? daysAgo(input.daysAgo - 3) : null,
+    completedAt:
+      input.status === "COMPLETED" || input.status === "REJECTED"
+        ? daysAgo(input.daysAgo - 3)
+        : null,
   };
   demoClaims.set(value.claimId, value);
 }
@@ -254,6 +260,16 @@ export function ensureHistory(ctx: DemoContext, member: DemoMemberState) {
     reason: "WRONG_ORDER",
     reasonDetail: null,
     daysAgo: 28,
+  });
+  // 머플러 반품은 판매자가 거절했다(거절 사유 확인용) — 거절 뒤 구매 확정
+  claim(sixth, lineOfOrder(sixth), {
+    type: "RETURN",
+    status: "REJECTED",
+    reason: "CHANGE_OF_MIND",
+    reasonDetail: null,
+    rejectReason:
+      "반송된 상품을 검수한 결과 착용 흔적과 향수 냄새가 있어 반품이 어렵습니다. 상품은 처음 배송지로 다시 보내 드렸습니다. 궁금한 점은 1:1 문의로 남겨 주십시오.",
+    daysAgo: 74,
   });
 
   review(second, lineOfOrder(second, 1), {
