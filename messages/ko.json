@@ -32,6 +32,8 @@
   "ac_tab_withdraw": "회원 탈퇴",
   "ac_title": "내 정보",
   "ac_unlink": "연결 해제",
+  "addr_search": "주소 검색",
+  "addr_search_failed": "주소 검색을 불러오지 못했습니다. 잠시 후 다시 시도하십시오",
   "banner_coupon": "{name} {amount} · 쿠폰 받기",
   "banner_coupons": "지금 받을 수 있는 쿠폰 {count}장",
   "cart_delivery_fee": "배송비",

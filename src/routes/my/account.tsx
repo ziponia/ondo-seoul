@@ -4,6 +4,7 @@ import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router"
 import { useState } from "react";
 import { z } from "zod";
 import { Mark, STYLE } from "../../components/account/social-buttons";
+import { PostcodeFields } from "../../components/address/postcode-fields";
 import { MySubPage } from "../../components/my/my-sub-page";
 import { m } from "../../i18n";
 import { meQuery, startLinkIdentity, unlinkIdentity, withdraw } from "../../lib/account";
@@ -270,9 +271,6 @@ function AddressForm({ address, onDone }: { address?: MemberAddress; onDone: () 
     { key: "alias", label: m.co_address_alias(), required: false },
     { key: "receiverName", label: m.co_address_receiver(), required: true },
     { key: "phone", label: m.co_address_phone(), required: true },
-    { key: "zipCode", label: m.co_address_zip(), required: true },
-    { key: "address1", label: m.co_address_1(), required: true },
-    { key: "address2", label: m.co_address_2(), required: false },
   ];
   return (
     <form
@@ -293,6 +291,11 @@ function AddressForm({ address, onDone }: { address?: MemberAddress; onDone: () 
           />
         </label>
       ))}
+      <PostcodeFields
+        value={form}
+        onChange={(next) => setForm({ ...form, ...next })}
+        inputClassName="h-11 w-full border border-line-strong px-3.5 font-normal text-body-lg"
+      />
       {save.data && !save.data.ok ? (
         <p role="alert" className="text-meta text-point">
           {save.data.message}

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { m } from "../../i18n";
 import { addAddress } from "../../lib/checkout";
 import { formatPhone } from "../../lib/format";
+import { PostcodeFields } from "../address/postcode-fields";
 
 export const MEMO_PRESETS = [
   () => m.co_memo_door(),
@@ -219,9 +220,6 @@ function NewAddressForm({
   const rows: { key: keyof typeof form; label: string; required: boolean; mode?: "numeric" }[] = [
     { key: "receiverName", label: m.co_address_receiver(), required: true },
     { key: "phone", label: m.co_address_phone(), required: true, mode: "numeric" },
-    { key: "zipCode", label: m.co_address_zip(), required: true, mode: "numeric" },
-    { key: "address1", label: m.co_address_1(), required: true },
-    { key: "address2", label: m.co_address_2(), required: false },
     { key: "alias", label: m.co_address_alias(), required: false },
   ];
   return (
@@ -244,6 +242,12 @@ function NewAddressForm({
           />
         </label>
       ))}
+      <PostcodeFields
+        value={form}
+        onChange={(next) => setForm({ ...form, ...next })}
+        inputClassName={field}
+        wideClassName="md:col-span-2"
+      />
       {save.isError ? (
         <p role="alert" className="text-meta text-point md:col-span-2">
           {m.co_address_failed()}

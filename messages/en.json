@@ -1,5 +1,7 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
+  "addr_search": "Find address",
+  "addr_search_failed": "Could not load address search. Please try again shortly",
   "banner_coupon": "{name} {amount} · Get coupon",
   "banner_coupons": "{count} coupons available now",
   "cart_delivery_fee": "Shipping",
