@@ -95,8 +95,8 @@ export function ReviewItem({ review }: { review: PublicReview }) {
       {review.images.length > 0 ? (
         <div className="flex gap-1.5">
           {review.images.map((src, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: 같은 사진 주소가 반복될 수 있다
             <img
+              // biome-ignore lint/suspicious/noArrayIndexKey: 같은 사진 주소가 반복될 수 있다
               key={i}
               src={cdnImage(src, 192)}
               alt=""

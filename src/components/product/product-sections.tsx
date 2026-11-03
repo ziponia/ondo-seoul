@@ -157,8 +157,8 @@ export function ReviewPreview({
           {photos.length > 0 ? (
             <div className="mt-5 mb-2 grid grid-cols-4 gap-1.5 md:grid-cols-8">
               {photos.map((src, i) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: 같은 사진 주소가 반복될 수 있다
                 <img
+                  // biome-ignore lint/suspicious/noArrayIndexKey: 같은 사진 주소가 반복될 수 있다
                   key={i}
                   src={cdnImage(src, 240)}
                   alt=""
