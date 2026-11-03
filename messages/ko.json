@@ -263,6 +263,8 @@
   "cr_submit": "등록",
   "cr_title": "쿠폰 번호 등록",
   "cr_view": "내 쿠폰 보기",
+  "decide_cancel": "취소",
+  "decide_desc": "구매를 확정하면 교환·반품을 신청할 수 없습니다.",
   "demo_badge": "데모",
   "demo_panel_note": "데모 데이터입니다. 실제 상점에 연결하면 상점 데이터로 바뀝니다",
   "demo_panel_open": "데모 시나리오 바꾸기",

@@ -1,6 +1,7 @@
 import type { MyOrderItem } from "@sayren/storefront-sdk";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { m } from "../../i18n";
 import { formatMoney } from "../../lib/format";
 import { decidePurchase } from "../../lib/my";
@@ -9,6 +10,7 @@ import { ProductImage } from "../product/product-image";
 /**
  * 주문상품 한 줄 — 상태 이름은 응답의 `step.label`(없으면 상태 값의 이름), 버튼은 응답이 허락한 것만 그린다.
  * `step.claimable`(취소·반품·교환), 배송 정보(`step.data.delivery`), 리뷰 쓰기(`reviewWritable`), 배송 완료의 구매 확정.
+ * 구매 확정은 되돌릴 수 없어 확인 창을 한 번 거친다.
  */
 
 export type ItemPanel = "track" | "claim" | "cancel";
@@ -82,13 +84,10 @@ export function ItemActions({
   /** 주문 상세 — 링크 대신 이 화면의 창을 연다 */
   onPanel?: (panel: ItemPanel) => void;
 }) {
-  const queryClient = useQueryClient();
-  const decide = useMutation({
-    mutationFn: () => decidePurchase({ data: { orderItemId: item.orderItemId } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my"] }),
-  });
+  const [deciding, setDeciding] = useState(false);
   return (
     <>
+      {deciding ? <DecideDialog item={item} onClose={() => setDeciding(false)} /> : null}
       {itemActions(item).map((action) => {
         switch (action.kind) {
           case "link":
@@ -122,8 +121,7 @@ export function ItemActions({
               <button
                 key={action.label}
                 type="button"
-                disabled={decide.isPending}
-                onClick={() => decide.mutate()}
+                onClick={() => setDeciding(true)}
                 className={primary}
               >
                 {action.label}
@@ -167,6 +165,72 @@ export function ItemActions({
         }
       })}
     </>
+  );
+}
+
+/** 구매 확정 확인 창 — 확정하면 교환·반품을 신청할 수 없다는 것을 알리고 한 번 더 누르게 한다 */
+function DecideDialog({ item, onClose }: { item: MyOrderItem; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const decide = useMutation({
+    mutationFn: () => decidePurchase({ data: { orderItemId: item.orderItemId } }),
+    onSuccess: async (result) => {
+      if (!result.ok) return;
+      await queryClient.invalidateQueries({ queryKey: ["my"] });
+      onClose();
+    },
+  });
+  const failed = decide.data && !decide.data.ok ? decide.data.message : null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/55 md:items-center md:p-6">
+      <button
+        type="button"
+        aria-label={m.claim_close()}
+        onClick={onClose}
+        className="absolute inset-0"
+      />
+      <section
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="decide-h"
+        aria-describedby="decide-d"
+        className="relative flex w-full flex-col gap-5 bg-page px-6 py-7 md:max-w-[420px]"
+      >
+        <h2 id="decide-h" className="font-black text-xl tracking-[-0.03em]">
+          {m.my_act_decide()}
+        </h2>
+        <div className="flex flex-col gap-1.5">
+          <p className="text-body-lg">
+            <b>{item.productName}</b>
+            {item.optionName ? <span className="text-muted"> · {item.optionName}</span> : null}
+          </p>
+          <p id="decide-d" className="text-body text-sub">
+            {m.decide_desc()}
+          </p>
+        </div>
+        {failed ? (
+          <p role="alert" className="text-meta text-point">
+            {failed}
+          </p>
+        ) : null}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-13 border border-line-strong font-bold text-body-lg"
+          >
+            {m.decide_cancel()}
+          </button>
+          <button
+            type="button"
+            disabled={decide.isPending}
+            onClick={() => decide.mutate()}
+            className="h-13 bg-ink font-bold text-body-lg text-page disabled:bg-disabled"
+          >
+            {m.my_act_decide()}
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 

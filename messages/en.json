@@ -85,6 +85,8 @@
   "co_title": "Checkout",
   "co_total": "Total",
   "co_total_currency": "{currency}",
+  "decide_cancel": "Cancel",
+  "decide_desc": "Once you confirm the purchase, you can no longer request an exchange or return.",
   "demo_badge": "Demo",
   "demo_panel_note": "Demo data. Connect a store to see its real data.",
   "demo_panel_open": "Change demo scenario",
