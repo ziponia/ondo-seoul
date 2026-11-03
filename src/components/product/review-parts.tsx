@@ -1,6 +1,7 @@
 import type { PublicReview, ReviewSummary as Summary } from "@sayren/storefront-sdk";
 import { useStore } from "../../hooks/use-catalog";
 import { m } from "../../i18n";
+import { cdnImage } from "../../lib/cdn-image";
 import { formatDate } from "../../lib/date";
 
 const STARS = [5, 4, 3, 2, 1] as const;
@@ -95,7 +96,13 @@ export function ReviewItem({ review }: { review: PublicReview }) {
         <div className="flex gap-1.5">
           {review.images.map((src, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: 같은 사진 주소가 반복될 수 있다
-            <img key={i} src={src} alt="" className="h-24 w-24 object-cover" />
+            <img
+              key={i}
+              src={cdnImage(src, 192)}
+              alt=""
+              loading="lazy"
+              className="h-24 w-24 bg-chip object-cover"
+            />
           ))}
         </div>
       ) : null}

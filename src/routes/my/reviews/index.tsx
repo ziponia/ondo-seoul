@@ -7,6 +7,7 @@ import { StarInput } from "../../../components/my/star-input";
 import { ProductImage } from "../../../components/product/product-image";
 import { useStore } from "../../../hooks/use-catalog";
 import { m } from "../../../i18n";
+import { cdnImage } from "../../../lib/cdn-image";
 import { formatMonthDay } from "../../../lib/date";
 import { formatMoney } from "../../../lib/format";
 import { myReviewsQuery, removeReview, updateReview } from "../../../lib/my";
@@ -226,8 +227,9 @@ function MyReviews() {
                       {r.images.map((src) => (
                         <img
                           key={src}
-                          src={src}
+                          src={cdnImage(src, 160)}
                           alt=""
+                          loading="lazy"
                           className="h-20 w-20 bg-chip object-cover"
                         />
                       ))}

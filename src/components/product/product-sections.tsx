@@ -2,6 +2,7 @@ import type { ProductDetail, PublicInquiry, ReviewPage } from "@sayren/storefron
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { m } from "../../i18n";
+import { cdnImage } from "../../lib/cdn-image";
 import { formatDate } from "../../lib/date";
 import { ReviewItem, ReviewSummary } from "./review-parts";
 
@@ -157,7 +158,13 @@ export function ReviewPreview({
             <div className="mt-5 mb-2 grid grid-cols-4 gap-1.5 md:grid-cols-8">
               {photos.map((src, i) => (
                 // biome-ignore lint/suspicious/noArrayIndexKey: 같은 사진 주소가 반복될 수 있다
-                <img key={i} src={src} alt="" className="aspect-square w-full object-cover" />
+                <img
+                  key={i}
+                  src={cdnImage(src, 240)}
+                  alt=""
+                  loading="lazy"
+                  className="aspect-square w-full bg-chip object-cover"
+                />
               ))}
             </div>
           ) : null}
