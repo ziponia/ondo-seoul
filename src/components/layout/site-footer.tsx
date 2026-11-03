@@ -35,9 +35,6 @@ export function SiteFooter({ store }: { store: StorefrontStore }) {
           <span className="font-display font-extrabold text-lg tracking-[-0.04em]">
             {store.name}
           </span>
-          {store.checkoutMode === "TEST" ? (
-            <p className="text-meta text-point">{m.footer_test_mode()}</p>
-          ) : null}
           <dl
             aria-label={m.footer_seller()}
             className="flex flex-wrap gap-x-3 gap-y-1 text-caption text-sub"
