@@ -31,6 +31,8 @@
   "cart_unpurchasable_SOLD_OUT": "Sold out",
   "cart_unpurchasable_SUSPENDED": "Unavailable",
   "categories_title": "Categories",
+  "claim_exchange_option": "Exchange for",
+  "claim_sold_out": "Sold out",
   "closed_notice": "We're not taking online orders right now",
   "closed_notice_phone": "Contact: {phone}",
   "co_add_address": "Add address",

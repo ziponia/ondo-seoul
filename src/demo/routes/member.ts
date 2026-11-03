@@ -307,8 +307,12 @@ function claimView(claim: DemoClaim) {
 
 function claimPreview(
   line: CheckoutLine,
-  input: { type: "RETURN" | "EXCHANGE" | "CANCEL"; reason: string },
+  input: { type: "RETURN" | "EXCHANGE" | "CANCEL"; reason: string; exchangeOptionId?: string },
 ) {
+  // 교환은 바꿀 조합이 필수다(실제 API의 400 VALIDATION_FAILED와 같다)
+  if (input.type === "EXCHANGE" && !input.exchangeOptionId) {
+    throw new DemoApiError(400, "VALIDATION_FAILED", "교환할 옵션을 선택해 주십시오");
+  }
   // 구매자 사유(변심·주문 실수)의 반품·교환은 왕복 배송비를 받는다 — 데모 상품의 반품 배송비(3,000원) 기준
   const buyerFault = input.reason === "CHANGE_OF_MIND" || input.reason === "WRONG_ORDER";
   const fee = input.type === "CANCEL" || !buyerFault ? 0 : input.type === "EXCHANGE" ? 6000 : 3000;
@@ -506,7 +510,10 @@ export const memberRoutes: DemoRoute[] = [
   // ── 취소·교환·반품 ──
   route("POST", "/me/order-items/:id/claims/preview", ({ ctx, params, body }) => {
     const { line } = lineOr404(ctx, params.id);
-    return claimPreview(line, body as { type: "RETURN" | "EXCHANGE" | "CANCEL"; reason: string });
+    return claimPreview(
+      line,
+      body as { type: "RETURN" | "EXCHANGE" | "CANCEL"; reason: string; exchangeOptionId?: string },
+    );
   }),
   route("POST", "/me/order-items/:id/claims", ({ ctx, params, body }) => {
     const { member, order, line, state } = lineOr404(ctx, params.id);
@@ -514,6 +521,7 @@ export const memberRoutes: DemoRoute[] = [
       type: "RETURN" | "EXCHANGE" | "CANCEL";
       reason: string;
       reasonDetail?: string;
+      exchangeOptionId?: string;
     };
     if (claimOfLine(line.lineId)?.status === "REQUESTED") {
       throw new DemoApiError(409, "CLAIM_IN_PROGRESS", "이미 신청한 상품입니다");

@@ -6,6 +6,7 @@ import { m } from "../../i18n";
 import { formatDate } from "../../lib/date";
 import { formatMoney } from "../../lib/format";
 import { createClaim, previewClaim } from "../../lib/my";
+import { productQuery } from "../../lib/queries";
 
 const REASONS: ClaimReason[] = [
   "CHANGE_OF_MIND",
@@ -21,6 +22,7 @@ type ClaimType = "RETURN" | "EXCHANGE" | "CANCEL";
 /**
  * 취소·교환·반품 신청 — 고를 수 있는 유형은 응답의 `step.claimable`이다. 예상 환불액·배송비는
  * 고른 값으로 `myClaims.preview`를 불러 그대로 보인다(화면에서 계산하지 않는다).
+ * 교환은 같은 상품의 조합(`variants`) 중 하나를 `exchangeOptionId`로 보낸다(서버 필수). 기본값은 주문한 조합이다.
  */
 export function ClaimDialog({
   item,
@@ -48,10 +50,22 @@ export function ClaimDialog({
     mode === "cancel" ? "WRONG_ORDER" : "DEFECTIVE",
   );
   const [detail, setDetail] = useState("");
-  const input = { orderItemId: item.orderItemId, type, reason };
+  const product = useQuery({ ...productQuery(item.productId), enabled: type === "EXCHANGE" }).data;
+  const variants = product?.variants ?? [];
+  const ordered = variants.find((v) => v.name === (item.optionName ?? ""));
+  const [picked, setPicked] = useState<string | null>(null);
+  const exchangeOptionId =
+    picked ?? (ordered && !ordered.soldOut ? ordered : variants.find((v) => !v.soldOut))?.variantId;
+  const input = {
+    orderItemId: item.orderItemId,
+    type,
+    reason,
+    ...(type === "EXCHANGE" && exchangeOptionId ? { exchangeOptionId } : {}),
+  };
   const preview = useQuery({
     queryKey: ["my", "claim-preview", input],
     queryFn: () => previewClaim({ data: input }),
+    enabled: type !== "EXCHANGE" || Boolean(exchangeOptionId),
   }).data;
   const submit = useMutation({
     mutationFn: () =>
@@ -149,6 +163,27 @@ export function ClaimDialog({
                 ))}
               </select>
             </label>
+            {type === "EXCHANGE" && variants.length > 1 ? (
+              <label className="flex flex-col gap-2 font-bold text-meta">
+                {m.claim_exchange_option()}
+                <select
+                  value={exchangeOptionId ?? ""}
+                  onChange={(event) => setPicked(event.target.value)}
+                  className="h-11 border border-line-strong bg-page px-3.5 font-normal text-body-lg"
+                >
+                  {variants.map((variant) => (
+                    <option
+                      key={variant.variantId}
+                      value={variant.variantId}
+                      disabled={variant.soldOut}
+                    >
+                      {variant.name}
+                      {variant.soldOut ? ` (${m.claim_sold_out()})` : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             {mode === "claim" ? (
               <label className="flex flex-col gap-2 font-bold text-meta">
                 {m.claim_detail()}
@@ -190,7 +225,7 @@ export function ClaimDialog({
             ) : null}
             <button
               type="submit"
-              disabled={submit.isPending}
+              disabled={submit.isPending || (type === "EXCHANGE" && !exchangeOptionId)}
               className="h-14 bg-ink font-bold text-base text-page disabled:bg-disabled"
             >
               {mode === "cancel" ? m.claim_submit_cancel() : m.claim_submit_claim()}

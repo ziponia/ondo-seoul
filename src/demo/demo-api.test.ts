@@ -260,6 +260,10 @@ describe("데모 회원 기록", () => {
       reasonDetail: "봉제선이 터졌습니다",
     });
     await api.myClaims.withdraw(ret.claimId);
+    // 교환은 바꿀 조합이 필수다
+    await expect(
+      api.myClaims.preview(delivered.orderItemId, { type: "EXCHANGE", reason: "WRONG_DELIVERY" }),
+    ).rejects.toMatchObject({ status: 400 });
     const claims = await api.myClaims.list();
     expect(claims.contents.find((c) => c.claimId === ret.claimId)?.status).toBe("WITHDRAWN");
 
