@@ -146,7 +146,7 @@ function PayFail({
         amount: note?.amount ?? 0,
         currency: note?.currency,
       });
-      const { label: _l, pgName: _p, ...option } = chosen;
+      const { label: _l, pgName: _p, logoUrl: _u, ...option } = chosen;
       await paymentsFor(config).retry(paymentId, {
         option,
         returnUrl: returnUrlFor(window.location.origin, checkoutId),

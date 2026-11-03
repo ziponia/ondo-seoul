@@ -4,7 +4,7 @@ import { m } from "../../i18n";
 
 /**
  * 결제수단 — 주문서 응답의 `paymentOptions`만 그린다(상점이 켠 PG·수단). 간편결제·카드·그 밖의 결제로 묶는다.
- * 이름은 응답의 `label`이다. 결제사 로고 이미지는 넣지 않는다(상표 이미지를 저장소에 두지 않는다).
+ * 이름은 응답의 `label`, 간편결제사 로고는 응답의 `logoUrl`(CDN)이다. 로고 이미지를 저장소에 두지 않는다.
  */
 export function PaymentOptions({
   options,
@@ -32,6 +32,7 @@ export function PaymentOptions({
         }`}
       >
         {option.method === "CARD" ? <CreditCard size={20} strokeWidth={1.6} aria-hidden /> : null}
+        <PaymentLogo option={option} />
         {option.label}
       </button>
     );
@@ -68,5 +69,20 @@ export function PaymentOptions({
         </div>
       )}
     </section>
+  );
+}
+
+/** 간편결제사 로고 — 이름이 옆에 있어 장식 이미지다(alt 비움). CDN이 48px WebP로 줄여 준다 */
+export function PaymentLogo({ option }: { option: AvailablePaymentOption }) {
+  if (!option.logoUrl) return null;
+  return (
+    <img
+      src={`${option.logoUrl}?w=48&f=webp`}
+      alt=""
+      width={24}
+      height={24}
+      loading="lazy"
+      className="size-6 shrink-0 rounded-md object-contain"
+    />
   );
 }

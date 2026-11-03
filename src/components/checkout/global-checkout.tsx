@@ -17,7 +17,9 @@ import { formatMoney } from "../../lib/format";
 import { savePayNote } from "../../lib/pay-note";
 import { paymentsFor } from "../../lib/payments";
 import { MobilePageHeader } from "../layout/mobile-page-header";
+
 import { ProductImage } from "../product/product-image";
+import { PaymentLogo } from "./payment-options";
 
 /**
  * 해외 주문서 — 판매 권역이 해외인 주문서. 배송 국가는 권역의 국가에서 고르고, 배송비는 그 국가로
@@ -71,7 +73,7 @@ export function GlobalCheckout({
   const pay = useMutation({
     mutationFn: async () => {
       if (!option) return { message: null };
-      const { label: _l, pgName: _p, ...chosen } = option;
+      const { label: _l, pgName: _p, logoUrl: _u, ...chosen } = option;
       const result = await startCheckoutPayment({
         data: {
           checkoutId: checkout.checkoutId,
@@ -256,10 +258,11 @@ export function GlobalCheckout({
                       type="button"
                       aria-pressed={key === optionKey}
                       onClick={() => setOptionKey(key)}
-                      className={`flex h-14 items-center px-5 font-bold text-body-lg ${
+                      className={`flex h-14 items-center gap-2.5 px-5 font-bold text-body-lg ${
                         key === optionKey ? "border-2 border-ink" : "border border-line-strong"
                       }`}
                     >
+                      <PaymentLogo option={o} />
                       {o.label}
                     </button>
                   );

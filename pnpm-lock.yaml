@@ -15,8 +15,8 @@ importers:
         specifier: ^5.9.1
         version: 5.9.2(@standard-schema/spec@1.1.0)(react-hook-form@7.91.0(@types/react@19.3.0)(react@19.3.1))(zod@4.6.7)
       '@sayren/storefront-sdk':
-        specifier: ^0.37.0
-        version: 0.37.0
+        specifier: ^0.38.0
+        version: 0.38.0
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@8.3.5(@types/node@24.19.2)(jiti@2.7.0))
@@ -685,8 +685,8 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
-  '@sayren/storefront-sdk@0.37.0':
-    resolution: {integrity: sha512-z7OWK3QVflazlLWRo2caHtd2M4HkBXti8pbKKl2sETQkDW5fyRSKGnvJxzk7dXwSxqd/Afixre1+Y49zH/SdyQ==}
+  '@sayren/storefront-sdk@0.38.0':
+    resolution: {integrity: sha512-+3pS1FwRg7aChWMv0iH2mKvQvEtdTlmegUU811vxeVE3C2aRu7uJycMZSbrESTSU8/HkY7nH5raueJ4+EkNsBQ==}
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -2218,7 +2218,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@sayren/storefront-sdk@0.37.0':
+  '@sayren/storefront-sdk@0.38.0':
     dependencies:
       zod: 4.6.7
 

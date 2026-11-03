@@ -31,7 +31,14 @@ import { readLines } from "./cart";
 
 /** 해외 권역 결제수단 — 데모 상점은 PayPal 하나 */
 const GLOBAL_PAYMENT_OPTIONS = [
-  { pg: "paypal", method: "EASY_PAY", provider: "PAYPAL", label: "PayPal", pgName: "PayPal" },
+  {
+    pg: "paypal",
+    method: "EASY_PAY",
+    provider: "PAYPAL",
+    label: "PayPal",
+    pgName: "PayPal",
+    logoUrl: "https://cdn.avarlabs.com/sayren/pg/paypal.png",
+  },
 ] as const;
 
 const optionsOf = (checkout: DemoCheckout) =>
@@ -44,6 +51,7 @@ const PAYMENT_OPTIONS = [
     provider: "NAVERPAY",
     label: "네이버페이",
     pgName: "네이버페이",
+    logoUrl: "https://cdn.avarlabs.com/sayren/pg/naverpay.png",
   },
   {
     pg: "kakaopay",
@@ -51,6 +59,7 @@ const PAYMENT_OPTIONS = [
     provider: "KAKAOPAY",
     label: "카카오페이",
     pgName: "카카오페이",
+    logoUrl: "https://cdn.avarlabs.com/sayren/pg/kakaopay.png",
   },
   {
     pg: "tosspayments",
@@ -58,11 +67,25 @@ const PAYMENT_OPTIONS = [
     provider: "TOSSPAY",
     label: "토스페이",
     pgName: "토스페이먼츠",
+    logoUrl: "https://cdn.avarlabs.com/sayren/pg/tosspayments.png",
   },
-  { pg: "portone", method: "EASY_PAY", provider: "PAYCO", label: "페이코", pgName: "포트원" },
-  { pg: "tosspayments", method: "CARD", label: "카드 결제", pgName: "토스페이먼츠" },
-  { pg: "tosspayments", method: "BANK_TRANSFER", label: "계좌이체", pgName: "토스페이먼츠" },
-  { pg: "portone", method: "MOBILE", label: "휴대폰결제", pgName: "포트원" },
+  {
+    pg: "portone",
+    method: "EASY_PAY",
+    provider: "PAYCO",
+    label: "페이코",
+    pgName: "포트원",
+    logoUrl: "https://cdn.avarlabs.com/sayren/pg/payco.png",
+  },
+  { pg: "tosspayments", method: "CARD", label: "카드 결제", pgName: "토스페이먼츠", logoUrl: null },
+  {
+    pg: "tosspayments",
+    method: "BANK_TRANSFER",
+    label: "계좌이체",
+    pgName: "토스페이먼츠",
+    logoUrl: null,
+  },
+  { pg: "portone", method: "MOBILE", label: "휴대폰결제", pgName: "포트원", logoUrl: null },
 ] as const;
 
 export const DEMO_PICKUP_LOCATIONS = [
@@ -215,7 +238,7 @@ function optionOr400(option: unknown): PaymentOptionInput {
   );
   if (!found)
     throw new DemoApiError(400, "PAYMENT_OPTION_UNAVAILABLE", "쓸 수 없는 결제수단입니다");
-  const { label: _l, pgName: _p, ...value } = found;
+  const { label: _l, pgName: _p, logoUrl: _u, ...value } = found;
   return value as PaymentOptionInput;
 }
 

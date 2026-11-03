@@ -326,7 +326,7 @@ describe("데모 해외 구매자", () => {
     expect(quote.amounts.deliveryFee).toBeGreaterThan(0);
     const [option] = checkout.paymentOptions;
     if (!option) throw new Error("결제수단이 비었습니다");
-    const { label: _l, pgName: _p, ...pay } = option;
+    const { label: _l, pgName: _p, logoUrl: _u, ...pay } = option;
     const start = await api.checkout.startPayment(checkout.checkoutId, {
       option: pay,
       returnUrl: "http://localhost:4010/checkout/return",
