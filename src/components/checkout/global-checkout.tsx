@@ -70,14 +70,16 @@ export function GlobalCheckout({
     ...(form.postalCode.trim() ? { postalCode: form.postalCode.trim() } : {}),
   };
   const parsed = internationalShippingAddressInputSchema.safeParse(address);
+  // 낼 금액이 0원이면 결제수단 없이 시작한다 — 결제 시작 응답이 `completed`라 결제창 없이 주문된다
+  const paymentRequired = amounts.totalAmount > 0;
   const pay = useMutation({
     mutationFn: async () => {
-      if (!option) return { message: null };
-      const { label: _l, pgName: _p, logoUrl: _u, ...chosen } = option;
+      if (paymentRequired && !option) return { message: null };
+      const chosen = paymentRequired && option ? requestOptionOf(option) : undefined;
       const result = await startCheckoutPayment({
         data: {
           checkoutId: checkout.checkoutId,
-          option: chosen,
+          ...(chosen ? { option: chosen } : {}),
           pickup: false,
           internationalAddress: address,
           coupons: [],
@@ -86,7 +88,7 @@ export function GlobalCheckout({
       if (!result.ok) return { message: result.message };
       const start = paymentStartSchema.parse(JSON.parse(result.start));
       savePayNote(start.paymentId, {
-        label: option.label,
+        label: chosen ? (option?.label ?? "") : "",
         amount: start.amounts.totalAmount,
         currency: checkout.currency,
       });
@@ -104,7 +106,7 @@ export function GlobalCheckout({
   const field = "h-12 w-full border border-line-strong bg-page px-3.5 font-normal text-body-lg";
   const label = "flex flex-col gap-1.5 font-bold text-meta";
   const total = formatMoney(amounts.totalAmount, checkout.currency);
-  const ready = parsed.success && option !== undefined && quote !== undefined;
+  const ready = parsed.success && (!paymentRequired || option !== undefined) && quote !== undefined;
   return (
     <div className="bg-surface pb-28 md:pb-24">
       <MobilePageHeader title={m.co_title()} icons={false} />
@@ -240,36 +242,38 @@ export function GlobalCheckout({
               ))}
             </ul>
           </section>
-          <section className="bg-page px-4 py-6 md:px-7">
-            <h2 className="mb-4 font-black text-lg tracking-[-0.03em] md:text-xl">
-              {m.co_payment()}
-            </h2>
-            {checkout.paymentOptions.length === 0 ? (
-              <p role="alert" className="text-body text-point">
-                {m.co_no_payment()}
-              </p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {checkout.paymentOptions.map((o: AvailablePaymentOption) => {
-                  const key = paymentOptionKey(o);
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      aria-pressed={key === optionKey}
-                      onClick={() => setOptionKey(key)}
-                      className={`flex h-14 items-center gap-2.5 px-5 font-bold text-body-lg ${
-                        key === optionKey ? "border-2 border-ink" : "border border-line-strong"
-                      }`}
-                    >
-                      <PaymentLogo option={o} />
-                      {o.label}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </section>
+          {paymentRequired ? (
+            <section className="bg-page px-4 py-6 md:px-7">
+              <h2 className="mb-4 font-black text-lg tracking-[-0.03em] md:text-xl">
+                {m.co_payment()}
+              </h2>
+              {checkout.paymentOptions.length === 0 ? (
+                <p role="alert" className="text-body text-point">
+                  {m.co_no_payment()}
+                </p>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  {checkout.paymentOptions.map((o: AvailablePaymentOption) => {
+                    const key = paymentOptionKey(o);
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        aria-pressed={key === optionKey}
+                        onClick={() => setOptionKey(key)}
+                        className={`flex h-14 items-center gap-2.5 px-5 font-bold text-body-lg ${
+                          key === optionKey ? "border-2 border-ink" : "border border-line-strong"
+                        }`}
+                      >
+                        <PaymentLogo option={o} />
+                        {o.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          ) : null}
         </div>
         <aside className="bg-page px-4 py-6 md:sticky md:top-6 md:px-7">
           <h2 className="mb-4 font-black text-lg tracking-[-0.03em] md:text-xl">
@@ -308,7 +312,9 @@ export function GlobalCheckout({
               onClick={() => pay.mutate()}
               className="h-14 w-full bg-ink font-bold text-base text-page disabled:bg-disabled"
             >
-              {option ? m.co_pay_with({ amount: total, method: option.label }) : m.co_pay()}
+              {paymentRequired && option
+                ? m.co_pay_with({ amount: total, method: option.label })
+                : m.co_pay()}
             </button>
           </div>
           {store.businessName ? (
@@ -320,4 +326,10 @@ export function GlobalCheckout({
       </div>
     </div>
   );
+}
+
+/** 옵션 표시 필드(라벨·PG 이름·로고)를 뺀 결제 요청 값 */
+function requestOptionOf(option: AvailablePaymentOption) {
+  const { label: _l, pgName: _p, logoUrl: _u, ...value } = option;
+  return value;
 }
